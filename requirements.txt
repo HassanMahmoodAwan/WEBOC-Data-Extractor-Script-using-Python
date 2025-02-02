@@ -4,5 +4,4 @@ bs4
 pdfplumber
 openpyxl
 asyncio
-pyodbc            # For Database SQL Server.
-sqlalchemy
+

@@ -14,7 +14,9 @@ if type(HsCodes) == list:
     if bool(code):
         run(HsCodes, isAllPages=True, maxPagesAllowed=5, isContinue=True, existingHsCode=code)
     else:
+        print("Not Continue")
         run(HsCodes, isAllPages=True, maxPagesAllowed=5, isContinue=False, existingHsCode=None)
+        
     
     
     

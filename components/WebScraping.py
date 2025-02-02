@@ -11,10 +11,16 @@ import time
 # ===== Global Variable ======
 dataSavingCounter = 0
 singleHsCodeData = {}
+fileNameValue = open(os.getcwd() + "/Documents/file_name_counter.txt", "r").read().strip()
+fileSavingName = f"weboc_data{fileNameValue}.xlsx"
+print("fileSavingName: ", fileSavingName, type(fileSavingName))
+fileCounter = 1
 
 async def scraper(hsCodeList:list[str], isAllPages = False, onlyOneRow = False, maxPagesAllowed:int = 5, isContinue=False, existingHsCode = None):
     global dataSavingCounter
     global singleHsCodeData
+    global fileCounter
+    global fileSavingName
     
     # Check Existing HsCode exist to Continue.
     if isContinue:  
@@ -22,9 +28,8 @@ async def scraper(hsCodeList:list[str], isAllPages = False, onlyOneRow = False, 
             start_index =  hsCodeList.index(existingHsCode)
             print(start_index)
             try: 
-                if os.path.exists(os.getcwd() + "/Documents/Excel-Files/weboc_data11.xlsx"):
-                    dataSavingCounter = len(pd.read_excel(os.getcwd() + "/Documents/Excel-Files/weboc_data11.xlsx"))
-                    print(dataSavingCounter)
+                if os.path.exists(os.getcwd() + f"/Documents/Excel-Files/{fileSavingName}"):
+                    dataSavingCounter = len(pd.read_excel(os.getcwd() + f"/Documents/Excel-Files/{fileSavingName}"))
                 else :
                     print("Path is not right.")
                     return
@@ -43,7 +48,7 @@ async def scraper(hsCodeList:list[str], isAllPages = False, onlyOneRow = False, 
     
     # new Extraction, Delete existing Data.
     if not isContinue:
-        outputExcelPath = f"./Documents/Excel-Files/weboc_data11.xlsx"
+        outputExcelPath = f"./Documents/Excel-Files/{fileSavingName}.xlsx"
         outputExcelPath = os.path.abspath(outputExcelPath)
         if os.path.exists(outputExcelPath):
             os.remove(outputExcelPath)  
@@ -58,10 +63,10 @@ async def scraper(hsCodeList:list[str], isAllPages = False, onlyOneRow = False, 
         page = await context.new_page()
         await page.goto(web_url)
         for index in range(start_index, len(hsCodeList)):
-        
             hsCodeData = {}
             if type(hsCodeList[index]) != str or len(hsCodeList[index]) != 9:
                 continue
+            fileCounter += 1
             print(hsCodeList[index])   
             with open(os.getcwd() + "/Documents/hsCode.txt", "w") as f:
                 f.write(hsCodeList[index])
@@ -93,7 +98,6 @@ async def scraper(hsCodeList:list[str], isAllPages = False, onlyOneRow = False, 
                     await page.fill('#ctrlPageRender_txtGoToPage', str(counter))
                     await asyncio.sleep(0.2)
                     await page.click('#ctrlPageRender_btnGoTo')
-                    print("Clicked")
                     await asyncio.sleep(1)
                     await page.wait_for_selector('#dgList tbody tr', timeout=100000, state="attached")
                     pageContent = await page.content()
@@ -192,7 +196,20 @@ def format_data(data):
 # ****** Saving Records in Excel File *******
 def save_data(df):
     global dataSavingCounter
-    file_name = 'weboc_data11.xlsx'
+    global fileCounter
+    print("fileCounter: ", fileCounter)
+    if fileCounter >= 20:
+        global fileSavingName
+        global fileNameValue
+        with open(os.getcwd() + "/Documents/file_name_counter.txt", "w") as f:
+            f.write(str(int(fileNameValue) + 1))
+            f.close()
+        fileNameValue = open(os.getcwd() + "/Documents/file_name_counter.txt", "r").read().strip()
+        fileSavingName = f"weboc_data{fileNameValue}.xlsx"
+        print("fileSavingName: ", fileSavingName)
+        fileCounter = 1
+        
+    file_name = fileSavingName
     outputExcelPath = f"./Documents/Excel-Files/{file_name}"
     outputExcelPath = os.path.abspath(outputExcelPath)
 

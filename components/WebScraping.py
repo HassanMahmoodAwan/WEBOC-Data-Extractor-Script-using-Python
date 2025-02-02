@@ -198,7 +198,7 @@ def save_data(df):
     global dataSavingCounter
     global fileCounter
     print("fileCounter: ", fileCounter)
-    if fileCounter >= 20:
+    if fileCounter >= 400:
         global fileSavingName
         global fileNameValue
         with open(os.getcwd() + "/Documents/file_name_counter.txt", "w") as f:

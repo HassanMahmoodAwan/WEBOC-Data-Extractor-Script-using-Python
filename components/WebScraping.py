@@ -35,7 +35,7 @@ async def scraper(hsCodeList:list[str], isAllPages = False, onlyOneRow = False, 
                     return
             except:
                 dataSavingCounter = 0
-            print(dataSavingCounter)
+            print("Excel record counter: ", dataSavingCounter)
         except:
             print("HsCode donot exist in List")
             return
